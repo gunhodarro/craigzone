@@ -11,6 +11,7 @@ $(document).ready(function() {
       email: emailInput.val().trim(),
       password: passwordInput.val().trim()
     };
+    console.log(userData);
 
     if (!userData.email || !userData.password) {
       return;
@@ -26,10 +27,15 @@ $(document).ready(function() {
   function signUpUser(email, password) {
     $.post("/api/signup", {
       email: email,
-      password: password
+      password: password,
+      wantsEmail: true,
+      city: null,
+      item: null,
+      priceMin: null,
+      priceMax: null
     })
       .then(function(data) {
-        window.location.replace("/members");
+        window.location.replace("/Craigzone");
         // If there's an error, handle it by throwing up a bootstrap alert
       })
       .catch(handleLoginErr);

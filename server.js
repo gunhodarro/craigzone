@@ -1,37 +1,30 @@
 var express = require("express");
-var path = require("path");
-const hbs = require("express-handlebars");
+var session = require("express-session");
 const scraper = require("./app/timscraper.js");
+var passport = require("./config/passport");
 
-// var app = express();
-// var PORT = process.env.PORT || 8080;
-
+var PORT = process.env.PORT || 8080;
 var db = require("./models");
 
-// //handlebars stuff
-// app.engine(
-//   "hbs",
-//   hbs({
-//     extname: "hbs",
-//     defaultLayout: "user",
-//     layoutsDir: __dirname + "/public/handlebars/"
-//   })
-// );
+var app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static("public"));
 
-let dump = scraper.data.craigScrape("denver", "pool table", 0, 5000);
+app.use(
+  session({ secret: "keyboard cat", resave: true, saveUninitialized: true })
+);
 
-// console.log(scraper);
+app.use(passport.initialize());
+app.use(passport.session());
 
-// console.log(scraper.data.craigScrape);
+require("./routes/html-routes.js")(app);
+require("./routes/api-routes.js")(app);
 
-// app.use(express.urlencoded({ extended: true }));
-// app.use(express.json());
+db.sequelize.sync().then(function() {
+  app.listen(PORT, function() {
+    console.log("App listening on PORT " + PORT);
+  });
+});
 
-// // Static directory
-// app.use(express.static("public"));
-
-// db.sequelize.sync().then(function() {
-//   app.listen(PORT, function() {
-//     console.log("App listening on PORT " + PORT);
-//   });
-// });
+// let dump = scraper.data.craigScrape("denver", "pool table", 0, 5000);
